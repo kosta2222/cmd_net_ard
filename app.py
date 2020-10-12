@@ -378,7 +378,7 @@ ICONST = 1
 FIND_FUNC = 3
 STOP = 32
 
-
+# локальная Vm
 def vm(program):
     print('Loc vm staeted.')
     steck = []
@@ -396,14 +396,19 @@ def vm(program):
                 print("Включаю лампу")
             elif arg == 1:
                 print("Выключаю лампу")
+        else:
+            print("Vm opcode unrecognized")
+            return        
         ip += 1
         op = program[ip]
 
     return 0
 
-
+# Параметры серийного порта для Arduino
 SERIAL_PORT = 'COM3'
 SERIAL_SPEED = 9600
+
+# утилитная константа выхода
 FINISH_SUCS = 0
 
 
