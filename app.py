@@ -431,6 +431,10 @@ def test(arg_exc='loc_vm'):
         cmd = input('->')
         # анализируем команды пользователя
         if cmd == 'r':
+            """
+            Запуск на на определенной Vm числового кода [байт-кода]
+            после формирования его с выходов сети связей
+            """
             b_c.append(STOP)
             # print("b_c", b_c)
             if arg_exc == 'loc_vm':
@@ -456,6 +460,9 @@ def test(arg_exc='loc_vm'):
         elif cmd == 'exit':
             sys.exit(FINISH_SUCS)
         else:
+            """
+            Запуск сети связей с вектором команды и формирований числового кода [байт-кода]
+            """
             vec = sents.get(cmd)
             if vec is None:
                 print("Cmd unricognized")
