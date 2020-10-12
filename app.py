@@ -9,7 +9,7 @@ from work_with_arr import add_2_vecs_comps, make_needed_vec, merge_2_vecs_to_nee
 from datetime import datetime
 import sys
 
-
+# 2-слойная сеть связей
 TRESHOLD_FUNC = 0
 TRESHOLD_FUNC_DERIV = 1
 SIGMOID = 2
@@ -279,15 +279,15 @@ num_2 = [0, 1]  # как хеш 2
 num_3 = [1, 0]  # как хеш 1
 
 train_inp_0 = [['Включи', (1, 0, 0, 0)],
-              ['Выключи', (0, 1, 0, 0 )],
-              ['лампу-1', (0, 0, 1, 0)],
-              ['лампу-2', (0, 0, 0, 1)]
-              ]
+               ['Выключи', (0, 1, 0, 0)],
+               ['лампу-1', (0, 0, 1, 0)],
+               ['лампу-2', (0, 0, 0, 1)]
+               ]
 train_inp = [[train_inp_0[0][1], train_inp_0[2][1]],
              [train_inp_0[0][1], train_inp_0[3][1]],
              [train_inp_0[1][1], train_inp_0[2][0]],
              [train_inp_0[1][1], train_inp_0[2][0]]
-             ]              
+             ]
 train_out = [['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC, num_2, 4)],
              ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC, num_3, 4)]
              ]
@@ -380,6 +380,7 @@ STOP = 32
 
 
 def vm(program):
+    print('Loc vm staeted.')
     steck = []
     ip = 0
     arg = 0
@@ -398,15 +399,21 @@ def vm(program):
         ip += 1
         op = program[ip]
 
-    return 0    
+    return 0
 
 
 SERIAL_PORT = 'COM3'
 SERIAL_SPEED = 9600
+FINISH_SUCS = 0
 
 
-def test():
-    ser = serial.Serial(SERIAL_PORT, SERIAL_SPEED)
+def test(arg_exc='loc_vm'):
+    """
+    Будем тестировать локальную тестировочную [заглушку] Vm или Vm на Arduino, зависимость arg
+    """
+    ser = None
+    if arg_exc == 'ard_vm':
+        ser = serial.Serial(SERIAL_PORT, SERIAL_SPEED)
 
     sents = {'включи лампу': (1, 1), 'выключи лампу': (1, 0)}
 
@@ -422,42 +429,46 @@ def test():
         print("Запустить r")
         print("Выйти exit")
         cmd = input('->')
+        # анализируем команды пользователя
         if cmd == 'r':
             b_c.append(STOP)
-            print("b_c", b_c)
-            # тестировочная заглушка
-            res = vm(b_c)
-            while True:
-              if res==0:
-                cmd = input('->')
-                b_c = []
-                break
-            # arduino исполнитель
-            # ser.write(bytes(b_c))
-            # Получение строк от vm от arduino
-            # while True:
-            #     dev_answ = ser.readline()
-            #     print(dev_answ)
-            #     if dev_answ == b'STOP VM\n':
-            #         cmd = input('->')
-            #         b_c = []
-            #         break
+            # print("b_c", b_c)
+            if arg_exc == 'loc_vm':
+                # тестировочная заглушка
+                res = vm(b_c)
+                while True:
+                    if res == 0:
+                        cmd = input('->')
+                        b_c = []
+                        break
+            elif arg_exc == 'ard_vm':
+                # arduino исполнитель
+                # передаем в байтах
+                ser.write(bytes(b_c))
+                # Получение строк от vm от arduino
+                while True:
+                    dev_answ = ser.readline()
+                    print(dev_answ)
+                    if dev_answ == b'STOP VM\n':
+                        cmd = input('->')
+                        b_c = []
+                        break
         elif cmd == 'exit':
-            break
-
-        vec = sents.get(cmd)
-        if vec is None:
-            print("Cmd unricognized")
-            sys.exit(1)
-        net_res = feed_forwarding(nn_params_new, vec)
-        vecs.append(net_res)
-        print("vec", vec)
-        op = calc_as_hash(net_res[0:2])
-        b_c.append(op)
-        arg = calc_as_hash(net_res[2:5])
-        # Добавляем аргумент только если он не равен нулю
-        if arg != 0:
-            b_c.append(arg)
+            sys.exit(FINISH_SUCS)
+        else:
+            vec = sents.get(cmd)
+            if vec is None:
+                print("Cmd unricognized")
+                sys.exit(1)
+            net_res = feed_forwarding(nn_params_new, vec)
+            vecs.append(net_res)
+            print("vec", vec)
+            op = calc_as_hash(net_res[0:2])
+            b_c.append(op)
+            arg = calc_as_hash(net_res[2:5])
+            # Добавляем аргумент только если он не равен нулю
+            if arg != 0:
+                b_c.append(arg)
 
     ser.close()
 
