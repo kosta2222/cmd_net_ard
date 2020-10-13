@@ -67,5 +67,28 @@ def merge_2_vecs_to_needed_vec(l1, l2, len_vec_d):
     for elem in range(len_l2):
         vec_d[cn] = l2[elem]
         cn += 1
-
     return vec_d
+
+def make_hashed_elems_matr(matrix_s):
+  """
+  Здесь мы будем хешировать вектора [эти вектора идут как элемены матрицы] в одно число
+  """  
+  m = len(matrix_s)
+
+  matrix_d = [0] * m
+  n1 = 1 # 1 элемент для выходной матрицы
+  for row in range(m):
+    matrix_d[row] = list([0] * n1)
+
+  # хешируем
+  for row in range(m):
+    row_s = matrix_s[row]
+    sum_hash = calc_as_hash(row_s)
+    sum_hash_as_l = [sum_hash]
+    matrix_d[row] = sum_hash_as_l
+
+  return matrix_d  
+
+m=[[0, 1],[1, 0],
+   [0, 0], [0, 1]]
+print(make_hashed_elems_matr(m))    

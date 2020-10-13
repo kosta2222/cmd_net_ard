@@ -1,3 +1,6 @@
+"""
+Некоторые пояснения к коду в desc.txt - например обозначения переменных 
+"""
 import serial
 import math
 import numpy as np
@@ -274,9 +277,10 @@ def plot_gr(_file: str, errors: list, epochs: list) -> None:
 STOP = 32
 FIND_FUNC = [1, 1]
 
-num = [1, 1]
-num_2 = [0, 1]  # как хеш 2
-num_3 = [1, 0]  # как хеш 1
+num_0 = [1, 1]  # 3
+num_1 = [0, 1]  # как хеш 2
+num_2 = [1, 0]  # как хеш 1
+num_3 = [0, 0]  # 0
 
 train_inp_0 = [['Включи', (1, 0, 0, 0)],
                ['Выключи', (0, 1, 0, 0)],
@@ -289,6 +293,8 @@ train_inp = [[train_inp_0[0][1], train_inp_0[2][1]],
              [train_inp_0[1][1], train_inp_0[2][0]]
              ]
 train_out = [['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC, num_2, 4)],
+             ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC, num_3, 4)],
+             ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC, num_0, 4)],
              ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC, num_3, 4)]
              ]
 
@@ -485,5 +491,5 @@ def test(arg_exc='loc_vm'):
     ser.close()
 
 
-# main()
-test()
+main()
+# test()
