@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import math
 import random
 from serial_deserial import to_file, deserialization
-from work_with_arr import add_2_vecs_comps, make_needed_vec, merge_2_vecs_to_needed_vec, calc_as_hash
+from work_with_arr import add_2_vecs_comps, make_needed_vec, merge_2_vecs_to_needed_vec, calc_as_hash, make_hashed_elems_matr
 from datetime import datetime
 import sys
 
@@ -275,33 +275,39 @@ def plot_gr(_file: str, errors: list, epochs: list) -> None:
 
 
 STOP = 32
-FIND_FUNC = [1, 1]
+FIND_FUNC_vec = [1, 1]
 
 num_0 = [1, 1]  # 3
 num_1 = [0, 1]  # как хеш 2
 num_2 = [1, 0]  # как хеш 1
 num_3 = [0, 0]  # 0
 
-train_inp_0 = [['Включи', (1, 0, 0, 0)],
-               ['Выключи', (0, 1, 0, 0)],
-               ['лампу-1', (0, 0, 1, 0)],
-               ['лампу-2', (0, 0, 0, 1)]
-               ]
-train_inp = [[train_inp_0[0][1], train_inp_0[2][1]],
-             [train_inp_0[0][1], train_inp_0[3][1]],
-             [train_inp_0[1][1], train_inp_0[2][0]],
-             [train_inp_0[1][1], train_inp_0[2][0]]
-             ]
-train_out = [['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC, num_2, 4)],
-             ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC, num_3, 4)],
-             ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC, num_0, 4)],
-             ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC, num_3, 4)]
-             ]
-
 
 def main():
     epochs = 1000
     l_r = 0.1
+
+    train_inp_0 = [['Включи', (1, 0, 0, 0)],
+                   ['Выключи', (0, 1, 0, 0)],
+                   ['лампу-1', (0, 0, 1, 0)],
+                   ['лампу-2', (0, 0, 0, 1)]
+                   ]
+    train_inp = [train_inp_0[0][1], train_inp_0[2][1],
+                 train_inp_0[0][1], train_inp_0[3][1],
+                 train_inp_0[1][1], train_inp_0[2][1],
+                 train_inp_0[1][1], train_inp_0[2][1]
+                 ]
+    print('train_inp', train_inp)
+
+    train_out = [['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_2, 4)],
+                 ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_3, 4)],
+                 ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_0, 4)],
+                 ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_3, 4)]
+                 ]
+    # новая ссылка
+    train_inp = make_hashed_elems_matr(train_inp)
+    print('train_inp', train_inp)
+    # print('train_out', train_inp)
 
     errors_y = []
     epochs_x = []
@@ -385,6 +391,8 @@ FIND_FUNC = 3
 STOP = 32
 
 # локальная Vm
+
+
 def vm(program):
     print('Loc vm staeted.')
     steck = []
@@ -404,11 +412,12 @@ def vm(program):
                 print("Выключаю лампу")
         else:
             print("Vm opcode unrecognized")
-            return        
+            return
         ip += 1
         op = program[ip]
 
     return 0
+
 
 # Параметры серийного порта для Arduino
 SERIAL_PORT = 'COM3'
