@@ -75,10 +75,8 @@ def make_hashed_elems_matr(matrix):
   """  
   m = len(matrix)
   n = len(matrix[0])
-  print("matrix_s[0]", matrix[0])
 
   matrix_d = [0] * m
-#   n1 = len(matrix_s[0])
   for row in range(m):
     matrix_d[row] = list([0] * n)
 
@@ -88,9 +86,9 @@ def make_hashed_elems_matr(matrix):
           print('[row][elem]', matrix[row][elem])
           row_s = matrix[row][elem]
           hash_sum = calc_as_hash(row_s)
-          matrix_d[row][elem] = hash_sum
+          matrix_d[row][elem] = hash_sum / 10
 
   return matrix_d  
 
-matr=[[[0, 1],[1, 1]],[(0, 1), (0, 0)]]
-print(make_hashed_elems_matr(matr))    
+# matr=[[[0, 1],[1, 1]],[(0, 1), (0, 0)]]
+# print(make_hashed_elems_matr(matr))    

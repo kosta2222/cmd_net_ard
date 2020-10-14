@@ -1,5 +1,5 @@
 """
-Некоторые пояснения к коду в desc.txt - например обозначения переменных 
+Некоторые пояснения к коду в desc.txt - например обозначения переменных
 """
 import serial
 import math
@@ -289,23 +289,28 @@ def main():
 
     train_inp_0 = [['Включи', (1, 0, 0, 0)],
                    ['Выключи', (0, 1, 0, 0)],
-                   ['лампу-1', (0, 0, 1, 0)],
+                   ['лампу-1', (1, 0, 0, 0)],
                    ['лампу-2', (0, 0, 0, 1)]
                    ]
-    train_inp = [train_inp_0[0][1], train_inp_0[2][1],
-                 train_inp_0[0][1], train_inp_0[3][1],
-                 train_inp_0[1][1], train_inp_0[2][1],
-                 train_inp_0[1][1], train_inp_0[2][1]
+    train_inp = [(train_inp_0[0][1], train_inp_0[2][1]),
+                 (train_inp_0[0][1], train_inp_0[3][1]),
+                 (train_inp_0[1][1], train_inp_0[2][1]),
+                 (train_inp_0[1][1], train_inp_0[2][1])
                  ]
+    train_inp = ((1, 0, 0, 0, 1, 0, 0, 0),
+                 (0, 1, 0, 0, 1, 0, 0, 0),
+                 (1, 0, 0, 0, 0, 0, 0, 1),
+                 (0, 1, 0, 0, 0, 0, 0, 1)
+                 )
     print('train_inp', train_inp)
 
     train_out = [['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_2, 4)],
                  ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_3, 4)],
                  ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_0, 4)],
-                 ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_3, 4)]
+                 ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_1, 4)]
                  ]
     # новая ссылка
-    train_inp = make_hashed_elems_matr(train_inp)
+    # train_inp = make_hashed_elems_matr(train_inp)
     print('train_inp', train_inp)
     # print('train_out', train_inp)
 
@@ -315,13 +320,13 @@ def main():
     # Создаем обьект параметров сети
     nn_params = Nn_params()
     # Создаем слои
-    n = cr_lay(nn_params, 2, 3, TRESHOLD_FUNC, False, INIT_W_MY)
+    n = cr_lay(nn_params, 8, 3, TRESHOLD_FUNC, False, INIT_W_MY)
     n = cr_lay(nn_params, 3, 4, TRESHOLD_FUNC, False, INIT_W_MY)
 
     for ep in range(epochs):  # Кол-во повторений для обучения
         gl_e = 0
         for single_array_ind in range(len(train_inp)):
-            inputs = train_inp[single_array_ind][1]
+            inputs = train_inp[single_array_ind]
             print("inputs", inputs)
             output = feed_forwarding(nn_params, inputs)
 
@@ -355,7 +360,7 @@ def main():
 
     train_inp_n = len(train_inp)
     for single_array_ind in range(train_inp_n):
-        inputs = train_inp[single_array_ind][1]
+        inputs = train_inp[single_array_ind]
 
         output_2_layer = feed_forwarding(nn_params, inputs)
 
@@ -406,10 +411,14 @@ def vm(program):
             ip += 1
             arg = program[ip]
             # print("arg", arg)
-            if arg == 2:
-                print("Включаю лампу")
-            elif arg == 1:
-                print("Выключаю лампу")
+            if arg == 1:
+                print("Включаю лампу-1")
+            elif arg == 0:
+                print("Выключаю лампу-1")
+            elif arg == 3:
+                print("Включаю лампу-2")
+            elif arg == 2:
+                print("Выключаю лампу-2")
         else:
             print("Vm opcode unrecognized")
             return
@@ -435,7 +444,10 @@ def test(arg_exc='loc_vm'):
     if arg_exc == 'ard_vm':
         ser = serial.Serial(SERIAL_PORT, SERIAL_SPEED)
 
-    sents = {'включи лампу': (1, 1), 'выключи лампу': (1, 0)}
+    sents = {'Включи': [1, 0, 0, 0],
+             'Выключи': [0, 1, 0, 0],
+             'лампу-1': [1, 0, 0, 0],
+             'лампу-2': [0, 0, 0, 1]}
 
     loger = Logger()
     nn_params_new = Nn_params()
@@ -487,7 +499,8 @@ def test(arg_exc='loc_vm'):
             if vec is None:
                 print("Cmd unricognized")
                 sys.exit(1)
-            net_res = feed_forwarding(nn_params_new, vec)
+            vecs.extend(vec)
+            net_res = feed_forwarding(nn_params_new, vecs)
             vecs.append(net_res)
             print("vec", vec)
             op = calc_as_hash(net_res[0:2])
