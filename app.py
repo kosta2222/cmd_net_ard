@@ -275,7 +275,7 @@ def plot_gr(_file: str, errors: list, epochs: list) -> None:
 
 
 STOP = 32
-FIND_FUNC_vec = [1, 1]
+FIND_FUNC_vec = [1, 0]
 
 num_0 = [1, 1]  # 3
 num_1 = [0, 1]  # как хеш 2
@@ -285,18 +285,18 @@ num_3 = [0, 0]  # 0
 
 def main():
     epochs = 1000
-    l_r = 0.1
+    l_r = 0.01
 
     train_inp_0 = [['Включи', (1, 0, 0, 0)],
                    ['Выключи', (0, 1, 0, 0)],
                    ['лампу-1', (1, 0, 0, 0)],
                    ['лампу-2', (0, 0, 0, 1)]
                    ]
-    train_inp = [(train_inp_0[0][1], train_inp_0[2][1]),
-                 (train_inp_0[0][1], train_inp_0[3][1]),
-                 (train_inp_0[1][1], train_inp_0[2][1]),
-                 (train_inp_0[1][1], train_inp_0[2][1])
-                 ]
+    # train_inp = [(train_inp_0[0][1], train_inp_0[2][1]),
+    #              (train_inp_0[0][1], train_inp_0[3][1]),
+    #              (train_inp_0[1][1], train_inp_0[2][1]),
+    #              (train_inp_0[1][1], train_inp_0[2][1])
+    #              ]
     train_inp = ((1, 0, 0, 0, 1, 0, 0, 0),
                  (0, 1, 0, 0, 1, 0, 0, 0),
                  (1, 0, 0, 0, 0, 0, 0, 1),
@@ -304,11 +304,16 @@ def main():
                  )
     print('train_inp', train_inp)
 
-    train_out = [['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_2, 4)],
-                 ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_3, 4)],
-                 ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_0, 4)],
-                 ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_1, 4)]
-                 ]
+    train_out = ((1, 0, 1, 0),
+                 (1, 0, 0, 0),
+                 (1, 0, 1, 1),
+                 (1, 0, 0, 1))
+
+    # train_out = [['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_2, 4)],
+    #              ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_3, 4)],
+    #              ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_0, 4)],
+    #              ['b_c', merge_2_vecs_to_needed_vec(FIND_FUNC_vec, num_1, 4)]
+    #              ]
     # новая ссылка
     # train_inp = make_hashed_elems_matr(train_inp)
     print('train_inp', train_inp)
@@ -320,8 +325,8 @@ def main():
     # Создаем обьект параметров сети
     nn_params = Nn_params()
     # Создаем слои
-    n = cr_lay(nn_params, 8, 3, TRESHOLD_FUNC, False, INIT_W_MY)
-    n = cr_lay(nn_params, 3, 4, TRESHOLD_FUNC, False, INIT_W_MY)
+    n = cr_lay(nn_params, 8, 3, TRESHOLD_FUNC, False, INIT_W_RANDOM)
+    n = cr_lay(nn_params, 3, 4, TRESHOLD_FUNC, False, INIT_W_RANDOM)
 
     for ep in range(epochs):  # Кол-во повторений для обучения
         gl_e = 0
@@ -331,11 +336,11 @@ def main():
             output = feed_forwarding(nn_params, inputs)
 
             print("train out",  train_out[single_array_ind])
-            e = calc_diff(output, train_out[single_array_ind][1])
+            e = calc_diff(output, train_out[single_array_ind])
 
             gl_e += get_err(e)
 
-            calc_out_error(nn_params, train_out[single_array_ind][1])
+            calc_out_error(nn_params, train_out[single_array_ind])
 
             # Обновление весов
             upd_matrix(nn_params, 1, nn_params.net[1].errors, get_hidden(nn_params.net[0]),
@@ -449,6 +454,11 @@ def test(arg_exc='loc_vm'):
              'лампу-1': [1, 0, 0, 0],
              'лампу-2': [0, 0, 0, 1]}
 
+    sents = {'Включи лампу-1': [1, 0, 0, 0, 1, 0, 0, 0],
+             'Выключи лампу-1': [0, 1, 0, 0, 0, 0, 0, 1],
+             'Включи лампу-2': [1, 0, 0, 0, 0, 0, 0, 1],
+             'Выключи лампу-2': [0, 1, 0, 0, 0, 0, 0, 1]}        
+
     loger = Logger()
     nn_params_new = Nn_params()
     deserialization(nn_params_new, 'wei1.my', loger)
@@ -501,7 +511,7 @@ def test(arg_exc='loc_vm'):
                 sys.exit(1)
             vecs.extend(vec)
             net_res = feed_forwarding(nn_params_new, vecs)
-            vecs.append(net_res)
+            # vecs.append(net_res)
             print("vec", vec)
             op = calc_as_hash(net_res[0:2])
             b_c.append(op)
@@ -513,5 +523,5 @@ def test(arg_exc='loc_vm'):
     ser.close()
 
 
-main()
-# test()
+# main()
+test()
