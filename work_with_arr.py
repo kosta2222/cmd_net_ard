@@ -1,3 +1,5 @@
+import numpy as np
+
 def copy_vector(src: list, dest: list, n):
     len_ = 0
     for i in range(n):
@@ -88,7 +90,19 @@ def make_hashed_elems_matr(matrix):
           hash_sum = calc_as_hash(row_s)
           matrix_d[row][elem] = hash_sum / 10
 
-  return matrix_d  
+  return matrix_d
 
+def calc_vec_as_one_zero(vec:np.ndarray):
+    len_sr = vec.shape[0]
+    # Нужный vec
+    vec_d = np.zeros(len_sr) # такой же
+
+    for elem in range(len_sr):
+        if vec[elem]<0.5:
+            vec_d[elem]=0
+        else:
+            vec_d[elem]=1
+    
+    return vec_d
 # matr=[[[0, 1],[1, 1]],[(0, 1), (0, 0)]]
 # print(make_hashed_elems_matr(matr))    
